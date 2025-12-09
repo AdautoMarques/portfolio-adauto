@@ -24,3 +24,29 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes floatY {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-18px) rotate(3deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+.formula {
+  animation: floatY 6s ease-in-out infinite;
+}
+
+html,
+body {
+  scroll-behavior: smooth;
+}
+
+canvas {
+  position: absolute;
+  inset: 0;
+}
