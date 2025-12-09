@@ -5,17 +5,20 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Sphere, Cylinder } from "@react-three/drei";
 import * as THREE from "three";
 
-// ===================== Bolhas =====================
+/* =======================================================
+    BOLHAS DENTRO DO TUBO
+=========================================================*/
 function Bubble({ position }: { position: [number, number, number] }) {
   const ref = useRef<THREE.Mesh>(null!);
 
-  useFrame((state, delta) => {
-    if (ref.current) {
-      ref.current.position.y += delta * 0.5;
-      if (ref.current.position.y > 2) ref.current.position.y = -2;
-      ref.current.rotation.x += delta * 0.5;
-      ref.current.rotation.y += delta * 0.5;
-    }
+  useFrame((_, delta) => {
+    if (!ref.current) return;
+
+    ref.current.position.y += delta * 0.5;
+    if (ref.current.position.y > 2) ref.current.position.y = -2;
+
+    ref.current.rotation.x += delta * 0.5;
+    ref.current.rotation.y += delta * 0.5;
   });
 
   return (
@@ -31,7 +34,9 @@ function Bubble({ position }: { position: [number, number, number] }) {
   );
 }
 
-// ===================== Tubos de Ensaio =====================
+/* =======================================================
+    TUBOS DE ENSAIO
+=========================================================*/
 function TestTube({ position }: { position: [number, number, number] }) {
   return (
     <group position={position}>
@@ -45,6 +50,7 @@ function TestTube({ position }: { position: [number, number, number] }) {
           opacity={0.6}
         />
       </Cylinder>
+
       {/* Líquido */}
       <Cylinder args={[0.09, 0.09, 0.8, 32]} position={[0, -0.35, 0]}>
         <meshStandardMaterial
@@ -55,6 +61,7 @@ function TestTube({ position }: { position: [number, number, number] }) {
           opacity={0.7}
         />
       </Cylinder>
+
       {/* Bolhas */}
       {Array.from({ length: 5 }).map((_, i) => (
         <Bubble
@@ -70,34 +77,37 @@ function TestTube({ position }: { position: [number, number, number] }) {
   );
 }
 
-// ===================== Partículas Futuristas =====================
+/* =======================================================
+    PARTÍCULAS FUTURISTAS (COM FIX PARA VERCEL)
+=========================================================*/
 function Particles() {
   const ref = useRef<THREE.Points>(null!);
+
+  // posição de 500 partículas
   const positions = new Float32Array(500 * 3);
   for (let i = 0; i < positions.length; i++) {
     positions[i] = (Math.random() - 0.5) * 10;
   }
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (ref.current) ref.current.rotation.y += delta * 0.02;
   });
 
   return (
     <points ref={ref}>
       <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          array={positions}
-          count={positions.length / 3}
-          itemSize={3}
-        />
+        {/* CORREÇÃO: agora usamos args={[array, itemSize]} */}
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
+
       <pointsMaterial size={0.03} color="#00ffff" transparent opacity={0.6} />
     </points>
   );
 }
 
-// ===================== Cena Completa =====================
+/* =======================================================
+    CENA COMPLETA
+=========================================================*/
 export default function FuturisticLabBackground() {
   return (
     <div className="absolute inset-0 z-0">
@@ -105,14 +115,16 @@ export default function FuturisticLabBackground() {
         <ambientLight intensity={0.5} />
         <pointLight position={[5, 5, 5]} intensity={1.2} color="#00ffff" />
         <pointLight position={[-5, 5, -5]} intensity={0.8} color="#ff00ff" />
-        {/* Tubos de ensaio */}
+
+        {/* Tubos de ensaio no cenário */}
         {Array.from({ length: 6 }).map((_, i) => (
           <TestTube
             key={i}
             position={[(i - 3) * 1, -0.5, (Math.random() - 0.5) * 2]}
           />
         ))}
-        {/* Partículas flutuantes */}
+
+        {/* Partículas flutuando */}
         <Particles />
       </Canvas>
     </div>
