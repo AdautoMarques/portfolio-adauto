@@ -20,7 +20,7 @@ interface Exercicio {
 
 // ----------------- HELPERS GERAIS -----------------
 
-function randomChoice<T>(arr: T[]): T {
+function randomChoice<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
@@ -128,17 +128,24 @@ function gerarConversoes(nivel: Nivel, quantidade: number): Exercicio[] {
     let unidadeDestino: UnidadeBase = "g";
 
     if (nivel === "facil") {
-      unidadeOrigem = randomChoice(["mol", "g"]);
+      unidadeOrigem = randomChoice(["mol", "g"] as UnidadeBase[]);
       unidadeDestino = unidadeOrigem === "mol" ? "g" : "mol";
     } else if (nivel === "medio") {
-      unidadeOrigem = randomChoice(["mol", "g", "L"]);
+      unidadeOrigem = randomChoice(["mol", "g", "L"] as UnidadeBase[]);
       unidadeDestino = randomChoice(
-        ["mol", "g", "L"].filter((u) => u !== unidadeOrigem)
+        (["mol", "g", "L"] as UnidadeBase[]).filter((u) => u !== unidadeOrigem)
       );
     } else {
-      unidadeOrigem = randomChoice(["mol", "g", "L", "particulas"]);
+      unidadeOrigem = randomChoice([
+        "mol",
+        "g",
+        "L",
+        "particulas",
+      ] as UnidadeBase[]);
       unidadeDestino = randomChoice(
-        ["mol", "g", "L", "particulas"].filter((u) => u !== unidadeOrigem)
+        (["mol", "g", "L", "particulas"] as UnidadeBase[]).filter(
+          (u) => u !== unidadeOrigem
+        )
       );
     }
 

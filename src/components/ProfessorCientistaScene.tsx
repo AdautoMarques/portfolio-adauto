@@ -13,7 +13,7 @@ function DNAHelix() {
     group.current.rotation.y += delta * 0.3;
   });
 
-  const points: JSX.Element[] = [];
+  const points: React.ReactNode[] = [];
   const turns = 12;
   const radius = 0.5;
   const height = 6;
@@ -62,9 +62,12 @@ function SolarSystem() {
 
   return (
     <group ref={group} scale={0.6} position={[2, 0, -1]}>
+      {/* “Sol” */}
       <Sphere args={[0.3, 32, 32]}>
         <meshStandardMaterial emissive="#ffcc00" emissiveIntensity={1.5} />
       </Sphere>
+
+      {/* Planetas orbitando */}
       {Array.from({ length: 5 }).map((_, i) => {
         const r = 0.7 + i * 0.4;
         const speed = 0.5 + i * 0.2;
@@ -73,7 +76,7 @@ function SolarSystem() {
             key={i}
             radius={r}
             speed={speed}
-            color={new THREE.Color(`hsl(${i * 60},100%,60%)`)}
+            color={new THREE.Color(`hsl(${i * 60}, 100%, 60%)`)}
           />
         );
       })}
@@ -91,6 +94,7 @@ function Planet({
   color: THREE.Color;
 }) {
   const ref = useRef<THREE.Mesh>(null!);
+
   useFrame((state) => {
     const t = state.clock.getElapsedTime() * speed;
     ref.current.position.x = Math.cos(t) * radius;
@@ -107,10 +111,15 @@ function Planet({
 // ===================== Energy Particles =====================
 function EnergyParticles() {
   const ref = useRef<THREE.Points>(null!);
-  const positions = new Float32Array(1000 * 3);
-  for (let i = 0; i < positions.length; i++) {
-    positions[i] = (Math.random() - 0.5) * 15;
-  }
+
+  // gera posições aleatórias
+  const positions = React.useMemo(() => {
+    const arr = new Float32Array(1000 * 3);
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = (Math.random() - 0.5) * 15;
+    }
+    return arr;
+  }, []);
 
   useFrame((_, delta) => {
     ref.current.rotation.y += delta * 0.05;
@@ -121,11 +130,10 @@ function EnergyParticles() {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          array={positions}
-          count={positions.length / 3}
-          itemSize={3}
+          args={[positions, 3]} // <- forma correta para THREE.BufferAttribute
         />
       </bufferGeometry>
+
       <pointsMaterial size={0.04} color="#00ffff" transparent opacity={0.6} />
     </points>
   );
@@ -138,6 +146,7 @@ export default function ProfessorCientistaScene() {
       <Canvas camera={{ position: [0, 0, 8], fov: 60 }}>
         <ambientLight intensity={0.6} />
         <pointLight position={[10, 10, 10]} />
+
         <DNAHelix />
         <SolarSystem />
         <EnergyParticles />
