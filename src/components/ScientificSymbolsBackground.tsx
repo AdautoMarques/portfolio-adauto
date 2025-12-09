@@ -47,6 +47,7 @@ function FloatingSymbol({
 // ===================== Partículas de Fundo =====================
 function Particles() {
   const ref = useRef<THREE.Points>(null!);
+
   const positions = new Float32Array(500 * 3);
   for (let i = 0; i < positions.length; i++) {
     positions[i] = (Math.random() - 0.5) * 15;
@@ -70,17 +71,14 @@ function Particles() {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          array={positions}
-          count={positions.length / 3}
-          itemSize={3}
+          args={[positions, 3]} // 👈 corrigido
         />
         <bufferAttribute
           attach="attributes-color"
-          array={colors}
-          count={colors.length / 3}
-          itemSize={3}
+          args={[colors, 3]} // 👈 corrigido
         />
       </bufferGeometry>
+
       <pointsMaterial vertexColors size={0.03} transparent opacity={0.7} />
     </points>
   );
